@@ -45,3 +45,8 @@ htmlcov/
 # Project specific
 recordings/
 emergency_backup/
+
+# API Keys and Secrets
+*.key
+*.secret
+dev_api.txt
