@@ -1,0 +1,123 @@
+{
+  "TestAlertSystem": {
+    "tests": {
+      "test_buffer_threshold_alert": {
+        "passed": true,
+        "duration": 0.03265409998130053,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:52.035866"
+      },
+      "test_config_validation": {
+        "passed": true,
+        "duration": 0.020145999995293096,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:52.058986"
+      },
+      "test_cpu_threshold_alert": {
+        "passed": true,
+        "duration": 0.02237660001264885,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:52.084638"
+      },
+      "test_error_handling": {
+        "passed": true,
+        "duration": 0.029044199996860698,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:52.118161"
+      },
+      "test_memory_threshold_alert": {
+        "passed": true,
+        "duration": 0.029244899982586503,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:52.151013"
+      },
+      "test_rapid_state_transitions": {
+        "passed": true,
+        "duration": 0.0955614999984391,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:52.252129"
+      },
+      "test_storage_latency_alert": {
+        "passed": true,
+        "duration": 0.023730499990051612,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:52.278573"
+      },
+      "test_stress_monitoring": {
+        "passed": true,
+        "duration": 5.025761400000192,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:57.307654"
+      },
+      "test_thread_registration": {
+        "passed": true,
+        "duration": 0.040095999982440844,
+        "error": null,
+        "markers": [],
+        "timestamp": "2025-02-19T09:19:57.352828"
+      }
+    }
+  },
+  "TestAlertSystemDynamic": {
+    "tests": {
+      "test_alert_history": {
+        "passed": true,
+        "duration": 0.0057299000036437064,
+        "error": null,
+        "markers": [
+          "asyncio",
+          "fast"
+        ],
+        "timestamp": "2025-02-19T09:19:57.362976"
+      },
+      "test_alert_suppression": {
+        "passed": true,
+        "duration": 0.005523100000573322,
+        "error": null,
+        "markers": [
+          "asyncio",
+          "fast"
+        ],
+        "timestamp": "2025-02-19T09:19:57.378183"
+      },
+      "test_dynamic_thresholds": {
+        "passed": true,
+        "duration": 0.005214200005866587,
+        "error": null,
+        "markers": [
+          "asyncio",
+          "fast"
+        ],
+        "timestamp": "2025-02-19T09:19:57.387247"
+      },
+      "test_performance_impact": {
+        "passed": true,
+        "duration": 0.004918299993732944,
+        "error": null,
+        "markers": [
+          "asyncio",
+          "fast"
+        ],
+        "timestamp": "2025-02-19T09:19:57.396901"
+      },
+      "test_rate_limiting": {
+        "passed": true,
+        "duration": 0.004745300015201792,
+        "error": null,
+        "markers": [
+          "asyncio",
+          "fast"
+        ],
+        "timestamp": "2025-02-19T09:19:57.406499"
+      }
+    }
+  }
+}

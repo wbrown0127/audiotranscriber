@@ -1,0 +1,10 @@
+{
+  "thresholds": {
+    "cpu_high": 80,
+    "memory_high": 100,
+    "storage_latency_high": 0.5,
+    "buffer_high": 90,
+    "buffer_warning": 75,
+    "io_low": 1
+  }
+}

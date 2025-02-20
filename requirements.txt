@@ -1,0 +1,21 @@
+# Core Dependencies
+pyaudiowpatch>=0.2.12  # WASAPI support
+audioop-lts>=0.2.1    # Python 3.13 compatibility
+numpy>=1.24.3         # Audio processing
+aiofiles>=23.2.1      # Async I/O operations
+psutil>=5.9.5         # System monitoring
+
+# Windows Integration
+pywin32>=306          # Windows API access
+comtypes>=1.2.0       # COM interface support
+
+# Monitoring and Logging
+python-json-logger>=2.0.7  # JSON formatted logging
+
+# Testing
+pytest>=7.4.0         # Testing framework
+pytest-asyncio>=0.23.5  # Async test support
+pytest-html>=4.1.1    # HTML test reports
+pytest-xdist>=3.5.0   # Parallel test execution
+matplotlib>=3.8.2     # Test result visualization
+scipy>=1.12.0         # Scientific computing and analysis
