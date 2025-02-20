@@ -6,7 +6,14 @@ This document outlines the long-term roadmap, architectural decisions, and techn
 ## 1. Technical Debt & Architecture Decisions
 
 ### Architecture Evolution
-1. Resource Management
+1. Component Dependencies (2025-02-20)
+- Analysis: Identified circular dependencies between core coordinators
+  * Issue: MonitoringCoordinator ↔ ComponentCoordinator bidirectional dependency
+  * Impact: Complex initialization, testing challenges
+  * Plan: Create coordinator interfaces to decouple components
+  * Future: Implement BaseCoordinator and ResourceCoordinator interfaces
+
+2. Resource Management
 - Decision: Implemented tiered ResourcePool (4KB/64KB/1MB)
   * Rationale: Optimize memory usage for different data sizes
   * Impact: 40% memory reduction achieved
@@ -25,7 +32,12 @@ This document outlines the long-term roadmap, architectural decisions, and techn
   * Future: Evaluate hardware acceleration options
 
 ### Technical Debt
-1. Thread Safety
+1. Circular Dependencies
+- Current: Tightly coupled coordinator components
+- Issues: Complex initialization, testing difficulties
+- Plan: Implement coordinator interfaces and decouple components
+
+2. Thread Safety
 - Current: Lock-based synchronization
 - Issues: Complex lock ordering, potential deadlocks
 - Plan: Evaluate lock-free algorithms for critical paths
@@ -115,6 +127,7 @@ app.setApplicationVersion("0.4.1")
 ## 3. Strategic Roadmap
 
 ### Phase 1: Core Optimization (Q2 2025)
+- Resolve circular dependencies through interfaces
 - Custom DSP implementation
 - Lock-free algorithms
 - Improved error tracking
