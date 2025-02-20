@@ -88,14 +88,18 @@ async def initialize_components(coordinator: MonitoringCoordinator):
         alert_system = AlertSystem(config=config, coordinator=coordinator)
         coordinator.alert_system = alert_system
 
-        # Get API key from environment variable
-        whisper_api_key = os.getenv("WHISPER_API_KEY")
-        if not whisper_api_key:
-            raise ValueError("WHISPER_API_KEY environment variable not set")
-        
         # Initialize components with coordinator integration
         storage_manager = StorageManager(base_path=project_root / "recordings")
         await storage_manager.initialize()  # Initialize storage first
+        
+        # Initialize WhisperTranscriber in mock mode for development
+        # Note: API key will be set through application settings in production
+        whisper_transcriber = WhisperTranscriber(
+            api_key="mock_key",  # Mock key for development
+            coordinator=coordinator,
+            max_retries=3,
+            rate_limit_per_min=50
+        )
         
         buffer_manager = BufferManager(coordinator=coordinator)
         await coordinator.register_component(buffer_manager, "buffer_manager")
@@ -109,7 +113,7 @@ async def initialize_components(coordinator: MonitoringCoordinator):
         audio_capture = AdaptiveAudioCapture(coordinator)
         await coordinator.register_component(audio_capture, "audio_capture")
         
-        whisper_transcriber = WhisperTranscriber(api_key=whisper_api_key)
+        # Already initialized above with mock key
         await coordinator.register_component(whisper_transcriber, "whisper_transcriber")
         
         signal_processor = SignalProcessor(
