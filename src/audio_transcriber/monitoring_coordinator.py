@@ -782,6 +782,38 @@ class MonitoringCoordinator(QObject):
                 return self._resource_pool.get_allocated_count()
             return 0
 
+    async def initialize_component(self, component: str, config: Dict[str, Any]) -> None:
+        """Initialize a component with metrics and monitoring configuration.
+        
+        Args:
+            component: Name of component to initialize
+            config: Configuration containing metrics, thresholds, and status options
+        """
+        with self._state_lock:
+            try:
+                # Register component with coordinator
+                self._component_coordinator.register_component(component)
+                
+                # Initialize metrics tracking
+                if 'metrics' in config:
+                    for metric in config['metrics']:
+                        self._metrics[f"{component}_{metric}"] = 0.0
+                
+                # Initialize thresholds
+                if 'thresholds' in config:
+                    for threshold in config['thresholds']:
+                        self._metrics[f"{component}_{threshold}_threshold"] = 0.0
+                
+                # Initialize status tracking
+                if 'status' in config:
+                    self._component_states[component] = config['status'][0]  # Set initial status
+                
+                self.logger.info(f"Initialized component: {component}")
+                
+            except Exception as e:
+                self.logger.error(f"Error initializing component {component}: {e}")
+                raise
+
     def mark_component_cleanup_complete(self, component: str) -> None:
         """Mark a component as having completed cleanup."""
         with self._state_lock:

@@ -35,6 +35,7 @@ ENV/
 *.log
 logs/
 *.sqlite
+oldtests/
 
 # Test results
 tests/results/
