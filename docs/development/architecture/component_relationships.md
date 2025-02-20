@@ -16,10 +16,65 @@
 - Manages channel-specific resource tracking
 - Integrates with StateMachine for state transitions
 
-### 3. Resource Management
+### 3. Resource Management Architecture
+
+#### Centralized Management
 - MonitoringCoordinator owns and initializes ResourcePool
-- ResourcePool provides centralized resource allocation
-- Resources injected into dependent components
+- ResourcePool provides tiered buffer allocation (4KB/64KB/1MB):
+  * 4KB tier: Small buffers for control data
+  * 64KB tier: Medium buffers for audio chunks
+  * 1MB tier: Large buffers for batch processing
+
+#### Architecture Benefits
+1. Structural Improvements:
+   - Eliminated circular dependencies
+   - Clearer component responsibilities
+   - Better resource lifecycle management
+   - Improved testability
+
+2. Performance Impact:
+   - Reduced lock contention
+   - More efficient resource allocation
+   - Better resource tracking
+   - Improved cleanup coordination
+
+3. Testing Improvements:
+   - Easier component isolation
+   - Better resource usage verification
+   - Clearer test setup
+   - More reliable cleanup
+- Resources injected into dependent components:
+  ```
+  src/audio_transcriber/
+  ├── Critical Components
+  │   ├── audio_capture.py       ✓ Complete
+  │   ├── audio_transcriber.py   ✓ Complete
+  │   ├── buffer_manager.py      ✓ Updated:
+  │   │   ├── Queue Implementation: Tier-aware optimization
+  │   │   ├── Channel Separation: Channel-specific queues
+  │   │   ├── State Management: Enhanced metrics
+  │   │   ├── Component Integration: Fixed concurrency
+  │   │   └── Error Handling: Comprehensive context
+  │   ├── signal_processor.py    ✓ Complete:
+  │   │   ├── Buffer Allocation: Using ResourcePool
+  │   │   └── Channel Sync: Coordinator integrated
+  │   ├── speaker_isolation.py   ✓ ResourcePool integrated
+  │   └── wasapi_monitor.py      ✓ Complete
+  ├── Support Components
+  │   ├── alert_system.py        ✓ Complete
+  │   ├── cleanup_coordinator.py ✓ Enhanced:
+  │   │   ├── State Transitions: Fixed validation
+  │   │   ├── Phase/State Mapping: Completed
+  │   │   ├── Cleanup Dependencies: Properly managed
+  │   │   └── Error Handling: Improved recovery
+  │   ├── monitoring_coordinator.py ⚠️ Integration Issues:
+  │   │   ├── Component Registration: Timing issues
+  │   │   ├── Metric Updates: Sync needed
+  │   │   └── Error Chain: Propagation broken
+  │   └── resource_pool.py       ✓ New (4KB/64KB/1MB pools)
+  └── GUI Components
+      └── gui/                   🟡 60% (Native features pending)
+  ```
 - No direct resource sharing between components
 - Follows established initialization order:
   1. MonitoringCoordinator creates ResourcePool

@@ -1,75 +1,185 @@
-# Audio Transcriber Development Documentation
+# Audio Transcriber Development Guide
 
-## Documentation Structure
+## Documentation Overview
 
-### Architecture
-- [System Architecture](architecture/architecture.md) - System design and component diagrams
-- [Component Relationships](architecture/component_relationships.md) - Detailed component interactions
+### Technical Documentation
+```
+docs/
+├── architecture/          # System design and relationships
+├── implementation/       # Component implementations
+├── development/         # Development guidelines
+└── troubleshooting/    # System troubleshooting
+```
 
-### Implementation
-- [Core Stability](implementation/core_stability.md) - Thread safety and stability implementation
-- [Transcription](implementation/transcription.md) - Transcription system implementation
-- [Buffer Management](buffer_management.md) - Buffer management system
-- [Performance Guide](performance.md) - Performance tuning and optimization
-- [Structure Improvements](structure_improvements.md) - Structural improvements
-- [Transcription Display](transcription_display.md) - Display system implementation
-- [Troubleshooting](troubleshooting.md) - System troubleshooting guide
+### Project Documentation
+```
+docs/
+├── status/              # Project status and roadmap
+├── tracking/           # Change history and file organization
+└── archive/           # Historical documentation
+```
 
-### Project Status
-- [Project Status](status/PROJECT_STATUS.md) - Comprehensive project status and roadmap
-- [Status Dashboard](status/STATUS_SUMMARY.md) - Key metrics and health indicators
+## Development Standards & Guidelines
 
-### Change Tracking
-- [File Structure](tracking/file_tracker.md) - Project file organization
-- [Change History](tracking/CHANGELOG.md) - Version history and changes
+### Code Structure
+1. File Organization
+   ```
+   src/
+   ├── audio_transcriber/     # Main package
+   │   ├── core/            # Core components
+   │   ├── gui/            # UI components
+   │   └── utils/         # Utilities
+   ```
 
-## Development Standards
+2. Import Standards
+   ```python
+   # Standard library imports
+   import os
+   import pathlib
+   
+   # Third-party imports
+   import numpy as np
+   
+   # Local imports
+   from audio_transcriber.core import Component
+   ```
 
-### Code Organization
-- Use pathlib.Path for all paths
-- Define paths in central configuration
-- Use relative paths from project root
-- Use absolute imports from project root
-- Group imports: stdlib → third-party → local
-- Avoid circular dependencies
-- Resource Management:
-  * MonitoringCoordinator owns ResourcePool
-  * ResourcePool injected into dependent components
-  * No direct resource sharing between components
-  * Follow established initialization order
+3. Resource Management
+   ```python
+   # Resource acquisition
+   with coordinator.get_resource() as resource:
+       # Resource usage
+       process_data(resource)
+   # Resource automatically released
+   ```
 
 ### Thread Safety
-- Use ComponentCoordinator for lifecycle
-- Use MonitoringCoordinator for metrics
-- Follow lock ordering rules
-- Use atomic state updates
-- Follow cleanup protocol
-- Use standardized monitoring
+1. Lock Hierarchy
+   ```python
+   # Correct order
+   with state_lock:
+       with metrics_lock:
+           update_state()
+   
+   # Incorrect - potential deadlock
+   with metrics_lock:
+       with state_lock:  # DON'T DO THIS
+           update_state()
+   ```
+
+2. Component Lifecycle
+   ```python
+   class Component:
+       def __init__(self, coordinator):
+           self.coordinator = coordinator
+           coordinator.register(self)
+   
+       def cleanup(self):
+           self.coordinator.unregister(self)
+   ```
 
 ### File Operations
-- Use async operations (aiofiles)
-- Implement context managers
-- Follow error handling standards
-- Follow backup retention policies
-- Use emergency backup for crashes
+1. Async File Handling
+   ```python
+   async with aiofiles.open(path, 'w') as f:
+       try:
+           await f.write(data)
+       except IOError as e:
+           logger.error(f"Write failed: {e}")
+           await backup_manager.create_emergency_backup()
+   ```
 
-### Testing
-- Store outputs in tests/results/
-- Follow TEST_POLICY.md guidelines
-- Run cleanup_test_outputs.py regularly
-- Use analyze_results.py for trends
-- Maintain test coverage standards
+2. Path Management
+   ```python
+   from pathlib import Path
+   
+   class FileManager:
+       def __init__(self, base_path: Path):
+           self.base_path = Path(base_path)
+           self.backup_path = self.base_path / "backups"
+   ```
+
+### Testing Standards
+1. Test Organization
+   ```python
+   class TestComponent:
+       def setup_method(self):
+           self.coordinator = MockCoordinator()
+           self.component = Component(self.coordinator)
+   
+       def test_lifecycle(self):
+           assert self.component.is_registered()
+   ```
+
+2. Test Output Structure
+   ```
+   tests/results/{timestamp}/
+   ├── logs/
+   │   └── pytest.log
+   └── reports/
+       ├── report.html
+       ├── report.json
+       └── junit.xml
+   ```
 
 ### Change Management
-- Document changes in CHANGELOG.md
-- Use templates from templates/
-- Follow semantic versioning
-- One change per commit
-- Move resolved bugs to archive/
+1. Commit Structure
+   ```
+   feat(component): Add new feature
+   
+   - Implemented X functionality
+   - Added Y capability
+   - Updated tests
+   
+   Resolves: #123
+   ```
 
-### Documentation
-- Keep docs in appropriate directories
-- Update file_tracker.md for changes
-- Follow policy documents
-- Maintain architecture diagrams
-- Document performance impacts
+2. Version Format
+   ```
+   MAJOR.MINOR.PATCH
+   2.1.3 = Major 2, Minor 1, Patch 3
+   ```
+
+3. Bug Reports
+   ```
+   bugs/
+   ├── active/          # Current issues
+   └── archive/        # Resolved issues
+   ```
+
+### Documentation Standards
+1. Code Documentation
+   ```python
+   def process_audio(data: bytes, config: Dict[str, Any]) -> np.ndarray:
+       """Process audio data with given configuration.
+       
+       Args:
+           data: Raw audio bytes
+           config: Processing configuration
+           
+       Returns:
+           Processed audio as numpy array
+           
+       Raises:
+           AudioProcessingError: If processing fails
+       """
+   ```
+
+2. Architecture Documentation
+   ```mermaid
+   graph TD
+   A[Component] --> B[Subcomponent]
+   ```
+
+3. Performance Documentation
+   ```markdown
+   ## Impact Analysis
+   - Memory: Document allocation patterns
+   - CPU: Document processing overhead
+   - I/O: Document file operations
+   ```
+
+## Quick Links
+- [Test Policy](TEST_POLICY.md)
+- [Architecture Guide](architecture/architecture.md)
+- [Troubleshooting](troubleshooting.md)

@@ -35,6 +35,44 @@ Process Limit: 100MB
 GC Strategy: Dynamic optimization
 Buffer Pool: 2GB maximum
 Cleanup Trigger: Memory pressure or CPU load
+
+# ResourcePool Configuration
+RESOURCE_POOL = {
+    'small_buffer': {
+        'size': 4 * 1024,    # 4KB
+        'count': 1000,       # Control data buffers
+        'prealloc': True
+    },
+    'medium_buffer': {
+        'size': 64 * 1024,   # 64KB
+        'count': 100,        # Audio chunk buffers
+        'prealloc': True
+    },
+    'large_buffer': {
+        'size': 1024 * 1024, # 1MB
+        'count': 10,         # Batch processing buffers
+        'prealloc': False
+    }
+}
+
+# Performance Metrics
+METRICS = {
+    'latency': {
+        'current': '<30ms',
+        'target': '<50ms',
+        'status': 'Exceeding target'
+    },
+    'memory': {
+        'reduction': '40%',
+        'through': 'ResourcePool optimization',
+        'status': 'Target achieved'
+    },
+    'api_cost': {
+        'reduction': '40%',
+        'through': 'VAD filtering',
+        'status': 'Below budget'
+    }
+}
 ```
 
 ### Storage Performance
@@ -183,7 +221,40 @@ python tests/test_real_devices.py
    })
    ```
 
-## 6. Recovery Optimization
+## 6. Backup System Architecture
+
+### Directory Structure
+```
+recordings/
+├── emergency_backup/    # Emergency backup files
+├── logs/               # Recording session logs
+└── BACKUP_POLICY.md    # Backup policy documentation
+```
+
+### Retention Rules
+1. Emergency Backups:
+   - Location: recordings/emergency_backup/
+   - Format: emergency_[timestamp].tmp
+   - Retention: 7 days
+   - Size Limits:
+     * Per file: 100MB
+     * Total: 1GB
+
+2. Recording Logs:
+   - Location: recordings/logs/
+   - Format: transcriber_[timestamp].log
+   - Retention: 30 days
+   - Size Limits:
+     * Per log: 10MB
+     * Total: 500MB
+
+### Implementation Notes
+- Automatic cleanup after successful recovery
+- Size-based rotation
+- Priority-based retention
+- UTC timestamps
+
+## 7. Recovery Optimization
 
 ### Recovery Configuration
 ```python

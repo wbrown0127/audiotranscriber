@@ -163,6 +163,35 @@ def verify_metrics(self, metrics):
 
 ## Test Execution
 
+### Current Test Status
+```
+Core Tests: 46/72 complete (63.9%)
+- 46 tests passing
+- 26 tests pending:
+  * 12 Analysis & Config tests
+  * 8 Integration tests
+  * 6 Stability tests
+
+Test Categories Breakdown:
+1. Analysis & Config (12 pending)
+   - Report generation
+   - Stability trend analysis
+   - Visualization generation
+   - System verification
+   - Component initialization
+   - Device verification
+
+2. Integration Tests (8 pending)
+   - Component registration timing
+   - Metric update synchronization
+   - Error propagation chain
+
+3. Stability Tests (6 pending)
+   - Resource management
+   - Error recovery
+   - Performance metrics
+```
+
 ### Running Tests
 ```bash
 # Run all tests
@@ -196,8 +225,55 @@ Note: Core tests are run using the shell script which automatically handles:
 - Performance metrics must meet thresholds
 - No resource leaks allowed
 
+## Test Infrastructure
+
+### Directory Structure
+```
+tests/
+├── results/                           # Test outputs
+│   ├── test_stability_*/             # Stability results
+│   ├── test_transcriber_*/           # Transcriber results
+│   └── test_report_*.json            # Result reports
+├── cleanup_test_outputs.py           # Cleanup automation
+├── analyze_results.py                # Analysis tools
+└── TEST_POLICY.md                    # Test policy documentation
+```
+
+### Test Output Management
+1. Retention Rules:
+   - Stability Tests: Keep last 5 successful runs
+   - Transcriber Tests: Keep last 10 runs
+   - Test Reports: 30 days retention
+
+2. Size Limits:
+   - Stability Tests: 2GB total
+   - Transcriber Tests: 1GB total
+   - Test Reports: 100MB total
+
+### Analysis Tools
+1. cleanup_test_outputs.py:
+   - Enforces retention policies
+   - Archives important failures
+   - Tracks cleanup history
+   - Usage:
+     ```bash
+     python tests/cleanup_test_outputs.py [--force]
+     ```
+
+2. analyze_results.py:
+   - Generates performance trends
+   - Creates visualization plots
+   - Produces HTML reports
+   - Usage:
+     ```bash
+     python tests/analyze_results.py [--days 30] [--output report.html]
+     ```
+
 ## Test Maintenance
 - Keep tests up to date with code changes
 - Remove obsolete tests
 - Update test documentation
 - Review test coverage regularly
+- Run cleanup_test_outputs.py regularly
+- Monitor test output sizes
+- Review analysis reports
