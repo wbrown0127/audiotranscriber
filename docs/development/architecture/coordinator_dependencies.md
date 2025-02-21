@@ -5,14 +5,187 @@
 ### 1.1 Current Architecture Issues (2025-02-20)
 
 #### Circular Dependencies
-- MonitoringCoordinator ↔ ComponentCoordinator bidirectional dependency
-- Resource management mixed with monitoring responsibilities
-- No clear separation between monitoring and coordination interfaces
-- Component state management tightly coupled with resource management
-- TestingCoordinator introduces potential new circular dependencies with MonitoringCoordinator
-- Cleanup operations span multiple coordinators without clear ownership
 
-#### Core Issues
+1. Current Circular Dependencies
+- MonitoringCoordinator → ComponentCoordinator (metrics collection)
+- StateMachine → ComponentCoordinator (state transitions)
+- ResourcePool → MonitoringCoordinator (resource metrics)
+- Resource management separated from monitoring responsibilities
+- Clear separation between monitoring and coordination interfaces
+- Component state management decoupled from resource management
+
+2. GUI Integration Dependencies
+- MainWindow → MonitoringCoordinator (real-time updates)
+- AlertSystem → QTimer (monitoring cycles)
+- GUI Components → State Management (UI updates)
+- Event-based notification system
+- Clean separation of core logic
+- Real-time visualization support
+
+3. Recovery System Dependencies
+- RecoveryLogger → MonitoringCoordinator (health tracking)
+- RecoveryLogger → ComponentCoordinator (state recovery)
+- Emergency Protocols → Resource Management (cleanup)
+- Clear error propagation paths
+- Proper error context preservation
+- Enhanced recovery verification
+
+4. Audio Processing Chain
+- AudioCapture → SignalProcessor (buffer management)
+- SignalProcessor → SpeakerIsolation (profile management)
+- Channel Processing → Resource Management (allocation)
+- Optimized buffer handling
+- Clear resource ownership
+- Enhanced performance tracking
+
+5. Hardware Management
+- DeviceManager → WASAPIMonitor (device states)
+- TestingCoordinator → HardwareResourceManager (test devices)
+- MonitoringCoordinator → DeviceVerifier (health checks)
+- Proper device lifecycle management
+- Clear resource cleanup
+- Enhanced error handling
+
+#### Potential Circular Dependencies
+1. Test Infrastructure Dependencies
+- ResourcePool → TestDataManager (test resources)
+- MonitoringCoordinator → TestExecution (metrics)
+- HardwareResourceManager → TestEnvironment (devices)
+
+2. Testing Infrastructure Dependencies
+   - TestingCoordinator → MonitoringCoordinator (test metrics/monitoring)
+   - TestingCoordinator → ComponentCoordinator (test state management)
+   - TestingCoordinator → CleanupCoordinator (test resource cleanup)
+   - TestingCoordinator → ResourcePool (test resource allocation)
+   - TestingCoordinator → TestEnvironment (test setup/teardown)
+   - TestingCoordinator → TestDataManager (test data handling)
+   - TestingCoordinator → TestMetrics (metrics collection)
+
+3. Cleanup Dependencies
+   - CleanupCoordinator → StateMachine (cleanup states)
+   - CleanupCoordinator → MonitoringCoordinator (cleanup metrics)
+   - CleanupCoordinator → ComponentCoordinator (component cleanup)
+
+4. Processing Chain Dependencies
+   - SignalProcessor → Transcriber (processing chain)
+   - AudioCapture → WASAPIMonitor (device management)
+   - SpeakerIsolation → WhisperTranscriber (speaker profiles)
+
+5. Resource Management Dependencies
+   - ResourcePool → BufferManager (resource allocation)
+   - ResourcePool → StorageManager (buffer management)
+   - ResourcePool → ComponentCoordinator (component resources)
+   - Centralized resource management
+   - Clear resource lifecycle
+   - Enhanced monitoring capabilities
+
+6. State Management Dependencies
+   - MonitoringCoordinator → StateMachine (state metrics)
+   - TestingCoordinator → ComponentState (test states)
+   - CleanupCoordinator → RecoveryLogger (recovery states)
+   - Clear state ownership
+   - Enhanced state validation
+   - Proper transition management
+
+#### Mitigation Strategies
+
+To manage these dependencies effectively, implement:
+
+1. Interface-based Decoupling
+   - Define clear interface boundaries between components
+   - Implement dependency injection for all coordinators
+   - Separate resource management from monitoring
+   - Isolate state transitions from core logic
+   - Abstract monitoring interfaces for testing
+   - Create clean separation between GUI and core components
+   - Implement channel-specific interfaces
+   - Define clear API boundaries
+   - Establish component isolation patterns
+   - Create test-specific interfaces
+
+2. Clear Responsibility Ownership
+   - Assign explicit component ownership
+   - Define complete resource lifecycles
+   - Establish state management hierarchy
+   - Document cleanup procedures
+   - Specify error handling chains
+   - Define test resource ownership
+   - Establish monitoring boundaries
+   - Create recovery ownership model
+   - Define channel management roles
+   - Specify test environment ownership
+
+3. Lock Hierarchy Enforcement
+   - Maintain strict lock ordering
+   - Implement deadlock prevention
+   - Define timeout management
+   - Establish cleanup order
+   - Coordinate state transitions
+   - Handle test-specific locks
+   - Manage resource locks
+   - Control channel synchronization
+   - Define recovery lock patterns
+   - Implement test isolation locks
+
+4. Resource Lifecycle Management
+   - Define allocation patterns
+   - Establish cleanup sequences
+   - Handle error states properly
+   - Track resource usage effectively
+   - Monitor performance impact
+   - Manage test resources
+   - Control channel resources
+   - Handle device resources
+   - Manage memory pools
+   - Track file handles
+
+5. Error Propagation Chains
+   - Define clear error paths
+   - Establish recovery states
+   - Handle cleanup failures
+   - Track error patterns
+   - Coordinate recovery procedures
+   - Manage test failures
+   - Handle device errors
+   - Process API errors
+   - Track channel errors
+   - Monitor system health
+
+6. State Transition Management
+   - Define clear state paths
+   - Implement validation checks
+   - Handle rollback procedures
+   - Track state history
+   - Manage recovery states
+   - Control test states
+   - Handle device states
+   - Process channel states
+   - Monitor component states
+   - Verify state consistency
+
+7. Performance Optimization
+   - Implement efficient resource usage
+   - Optimize lock patterns
+   - Minimize state transitions
+   - Reduce error overhead
+   - Optimize cleanup procedures
+   - Enhance test performance
+   - Improve channel processing
+   - Optimize device handling
+   - Reduce memory fragmentation
+   - Enhance I/O operations
+
+8. Testing Infrastructure
+   - Implement comprehensive test coverage
+   - Create isolation mechanisms
+   - Define verification procedures
+   - Establish monitoring systems
+   - Track test metrics
+   - Manage test resources
+   - Handle test failures
+   - Verify cleanup procedures
+   - Monitor test performance
+   - Generate test reports
 
 #### Core Issues
 1. State Management
@@ -28,6 +201,86 @@
    - Async state transitions not fully handled
    - State rollback during test failures needs coordination
    - Lock acquisition order during state transitions not verified
+
+2. Async Operation Handling
+   - No explicit examples of async error propagation in lock hierarchy
+   - Missing guidance for async state transitions during test execution
+   - Need examples of async resource cleanup coordination
+   - Lack of async operation timeout handling in test scenarios
+   - Async error context preservation incomplete
+   - No standardized async operation patterns
+   - Missing async operation cancellation handling
+   - Incomplete async resource lifecycle management
+
+3. Hardware Resource Management
+   - No detailed examples of hardware resource cleanup in TestingCoordinator
+   - Missing specifications for hardware test lab requirements
+   - Incomplete guidance for handling hardware failures during tests
+   - Need examples of device state verification in test scenarios
+   - Hardware resource lifecycle not fully defined
+   - Device state transition validation incomplete
+   - Missing hardware error recovery procedures
+   - No clear hardware resource ownership
+
+4. Performance Monitoring
+   - Missing examples of performance degradation detection
+   - No threshold definitions for resource usage monitoring
+   - Incomplete metrics collection for long-running tests
+   - Need guidance for performance impact during concurrent operations
+   - Performance baseline establishment unclear
+   - Resource usage thresholds not standardized
+   - Missing performance impact analysis
+   - No clear performance regression detection
+
+5. Channel Synchronization
+   - Missing examples of multi-channel error recovery
+   - Incomplete guidance for channel-specific resource limits
+   - Need examples of channel state verification in tests
+   - Lack of channel synchronization failure handling
+   - Channel state corruption detection missing
+   - No clear channel ownership model
+   - Missing channel resource isolation
+   - Incomplete channel cleanup procedures
+
+6. Test Data Management
+   - No standardized approach for test data generation
+   - Missing examples of test data cleanup procedures
+   - Incomplete guidance for test data isolation
+   - Need examples of test data verification
+   - Test data lifecycle not defined
+   - Missing test data corruption detection
+   - No clear test data ownership
+   - Incomplete test data cleanup verification
+
+7. Recovery Procedures
+   - Missing examples of partial recovery scenarios
+   - Incomplete guidance for recovery state verification
+   - Need examples of recovery during concurrent operations
+   - Lack of recovery procedure timeout handling
+   - Recovery state corruption detection missing
+   - No clear recovery ownership model
+   - Incomplete recovery verification
+   - Missing recovery metrics collection
+
+8. Resource Pool Fragmentation
+   - Missing examples of fragmentation detection
+   - No guidance for fragmentation prevention
+   - Incomplete cleanup procedures for fragmented pools
+   - Need examples of pool optimization during long runs
+   - Pool health monitoring incomplete
+   - No clear fragmentation thresholds
+   - Missing pool optimization metrics
+   - Incomplete pool cleanup verification
+
+9. Thread Safety
+   - Missing examples of thread deadlock detection
+   - Incomplete guidance for thread starvation prevention
+   - Need examples of thread health verification
+   - Lack of thread cleanup timeout handling
+   - Thread state corruption detection missing
+   - No clear thread ownership model
+   - Missing thread resource isolation
+   - Incomplete thread cleanup procedures
 
 2. Resource Management
    - Mixed responsibilities between coordinators
@@ -1242,277 +1495,926 @@ Interface Implementation:
 - Separate resource and state management
 - Maintain performance optimizations
 
+### 8.5 Async Operation Management
+```python
+class AsyncOperationManager:
+    """Manages async operations with proper error handling and timeouts."""
+    
+    def __init__(self, timeout_ms: int = 5000):
+        self.timeout_ms = timeout_ms
+        self.locks = {
+            "state": threading.RLock(),
+            "metrics": threading.RLock(),
+            "perf": threading.RLock(),
+            "component": threading.RLock(),
+            "update": threading.RLock()
+        }
+        
+    async def execute_with_timeout(
+        self,
+        operation: Callable,
+        error_context: Dict[str, Any]
+    ) -> Any:
+        """Execute async operation with timeout and error context."""
+        try:
+            return await asyncio.wait_for(
+                operation(),
+                timeout=self.timeout_ms/1000
+            )
+        except asyncio.TimeoutError:
+            raise AsyncOperationError(
+                f"Operation timed out after {self.timeout_ms}ms",
+                error_context
+            )
+        except Exception as e:
+            raise AsyncOperationError(
+                f"Operation failed: {e}",
+                error_context
+            )
+            
+    async def transition_state_async(
+        self,
+        component: str,
+        new_state: ComponentState,
+        coordinator: ComponentCoordinator
+    ) -> None:
+        """Handle async state transitions with proper lock management."""
+        async with self.locks["state"]:
+            try:
+                await coordinator.transition_component_state(
+                    component,
+                    new_state
+                )
+            except Exception as e:
+                error_context = {
+                    "component": component,
+                    "current_state": coordinator.get_component_state(component),
+                    "target_state": new_state,
+                    "lock_state": self._get_lock_state()
+                }
+                raise AsyncStateTransitionError(str(e), error_context)
+                
+    async def cleanup_resources_async(
+        self,
+        resources: List[Resource],
+        coordinator: CleanupCoordinator
+    ) -> None:
+        """Handle async resource cleanup with proper error handling."""
+        async with self.locks["component"]:
+            try:
+                cleanup_tasks = [
+                    coordinator.cleanup_resource(resource)
+                    for resource in resources
+                ]
+                await asyncio.gather(*cleanup_tasks)
+            except Exception as e:
+                error_context = {
+                    "resources": resources,
+                    "lock_state": self._get_lock_state()
+                }
+                raise AsyncCleanupError(str(e), error_context)
+```
+
+### 8.6 Hardware Resource Management
+```python
+class HardwareResourceManager:
+    """Manages hardware resources with proper cleanup and verification."""
+    
+    def __init__(self):
+        self.devices = {}
+        self.device_states = {}
+        self.locks = threading.RLock()
+        
+    def register_device(
+        self,
+        device_id: str,
+        device_type: str,
+        cleanup_handler: Callable
+    ) -> None:
+        """Register hardware device with cleanup handler."""
+        with self.locks:
+            self.devices[device_id] = {
+                "type": device_type,
+                "cleanup": cleanup_handler,
+                "state": "initialized"
+            }
+            
+    def verify_device_state(self, device_id: str) -> bool:
+        """Verify hardware device state."""
+        with self.locks:
+            if device_id not in self.devices:
+                raise DeviceError(f"Unknown device: {device_id}")
+            device = self.devices[device_id]
+            return self._check_device_health(device)
+            
+    def cleanup_device(self, device_id: str) -> None:
+        """Clean up hardware device with verification."""
+        with self.locks:
+            if device_id not in self.devices:
+                raise DeviceError(f"Unknown device: {device_id}")
+            device = self.devices[device_id]
+            try:
+                device["cleanup"]()
+                device["state"] = "cleaned"
+            except Exception as e:
+                raise DeviceCleanupError(
+                    f"Device cleanup failed: {e}",
+                    {"device": device}
+                )
+                
+    def _check_device_health(self, device: Dict) -> bool:
+        """Check hardware device health."""
+        try:
+            # Device-specific health checks
+            return True
+        except Exception as e:
+            raise DeviceHealthError(
+                f"Device health check failed: {e}",
+                {"device": device}
+            )
+```
+
+### 8.7 Performance Monitoring
+```python
+class PerformanceMonitor:
+    """Monitors system performance with thresholds and degradation detection."""
+    
+    def __init__(self):
+        self.thresholds = {
+            "cpu_usage": 80.0,  # percent
+            "memory_usage": 85.0,  # percent
+            "response_time": 100.0,  # ms
+            "queue_size": 1000,  # items
+        }
+        self.metrics_history = defaultdict(list)
+        self.locks = threading.RLock()
+        
+    def record_metric(
+        self,
+        metric_name: str,
+        value: float,
+        component: str
+    ) -> None:
+        """Record performance metric with threshold checking."""
+        with self.locks:
+            self.metrics_history[metric_name].append({
+                "value": value,
+                "timestamp": time.time(),
+                "component": component
+            })
+            self._check_threshold(metric_name, value)
+            self._detect_degradation(metric_name)
+            
+    def _check_threshold(
+        self,
+        metric_name: str,
+        value: float
+    ) -> None:
+        """Check if metric exceeds threshold."""
+        if (
+            metric_name in self.thresholds and
+            value > self.thresholds[metric_name]
+        ):
+            raise PerformanceError(
+                f"{metric_name} exceeded threshold: {value}",
+                {
+                    "metric": metric_name,
+                    "value": value,
+                    "threshold": self.thresholds[metric_name]
+                }
+            )
+            
+    def _detect_degradation(self, metric_name: str) -> None:
+        """Detect performance degradation trends."""
+        history = self.metrics_history[metric_name]
+        if len(history) < 10:
+            return
+            
+        recent = history[-10:]
+        trend = np.polyfit(
+            range(len(recent)),
+            [m["value"] for m in recent],
+            1
+        )[0]
+        
+        if trend > 0.1:  # Significant upward trend
+            raise PerformanceDegradationError(
+                f"{metric_name} showing degradation",
+                {
+                    "metric": metric_name,
+                    "trend": trend,
+                    "recent_values": recent
+                }
+            )
+```
+
+### 8.8 Channel Synchronization
+```python
+class ChannelSynchronizer:
+    """Manages multi-channel synchronization and error recovery."""
+    
+    def __init__(self):
+        self.channels = defaultdict(dict)
+        self.locks = {
+            "state": threading.RLock(),
+            "resource": threading.RLock()
+        }
+        
+    def verify_channel_state(
+        self,
+        channel: str,
+        expected_state: str
+    ) -> None:
+        """Verify channel state with proper error handling."""
+        with self.locks["state"]:
+            if channel not in self.channels:
+                raise ChannelError(f"Unknown channel: {channel}")
+            current_state = self.channels[channel].get("state")
+            if current_state != expected_state:
+                raise ChannelStateError(
+                    f"Invalid channel state: {current_state}",
+                    {
+                        "channel": channel,
+                        "current_state": current_state,
+                        "expected_state": expected_state
+                    }
+                )
+                
+    def allocate_channel_resource(
+        self,
+        channel: str,
+        resource_type: str,
+        size: int
+    ) -> Any:
+        """Allocate channel-specific resource with limits."""
+        with self.locks["resource"]:
+            if self._check_channel_limits(channel, resource_type, size):
+                resource = self._create_resource(resource_type, size)
+                self.channels[channel][resource_type] = resource
+                return resource
+                
+    def _check_channel_limits(
+        self,
+        channel: str,
+        resource_type: str,
+        size: int
+    ) -> bool:
+        """Check channel-specific resource limits."""
+        current_usage = sum(
+            r.size for r in self.channels[channel].values()
+            if isinstance(r, Resource)
+        )
+        if current_usage + size > MAX_CHANNEL_RESOURCES:
+            raise ChannelResourceError(
+                f"Channel resource limit exceeded",
+                {
+                    "channel": channel,
+                    "current_usage": current_usage,
+                    "requested_size": size,
+                    "limit": MAX_CHANNEL_RESOURCES
+                }
+            )
+        return True
+```
+
+### 8.9 Test Data Management
+```python
+class TestDataManager:
+    """Manages test data generation, isolation, and cleanup."""
+    
+    def __init__(self, base_path: str):
+        self.base_path = base_path
+        self.test_data = {}
+        self.locks = threading.RLock()
+        
+    def generate_test_data(
+        self,
+        test_name: str,
+        data_type: str,
+        **kwargs
+    ) -> bytes:
+        """Generate and store test data with isolation."""
+        with self.locks:
+            data = self._create_test_data(data_type, **kwargs)
+            path = self._get_test_path(test_name)
+            os.makedirs(path, exist_ok=True)
+            
+            file_path = os.path.join(path, f"{data_type}.dat")
+            with open(file_path, "wb") as f:
+                f.write(data)
+                
+            self.test_data[test_name] = {
+                "type": data_type,
+                "path": file_path,
+                "size": len(data)
+            }
+            return data
+            
+    def verify_test_data(
+        self,
+        test_name: str,
+        expected_type: str
+    ) -> bool:
+        """Verify test data integrity."""
+        with self.locks:
+            if test_name not in self.test_data:
+                raise TestDataError(f"No data for test: {test_name}")
+            data_info = self.test_data[test_name]
+            if data_info["type"] != expected_type:
+                raise TestDataError(
+                    f"Invalid data type: {data_info['type']}",
+                    {
+                        "test": test_name,
+                        "expected_type": expected_type,
+                        "actual_type": data_info["type"]
+                    }
+                )
+            return self._verify_data_integrity(data_info["path"])
+            
+    def cleanup_test_data(self, test_name: str) -> None:
+        """Clean up test data with verification."""
+        with self.locks:
+            if test_name not in self.test_data:
+                return
+            data_info = self.test_data[test_name]
+            try:
+                os.remove(data_info["path"])
+                shutil.rmtree(self._get_test_path(test_name))
+                del self.test_data[test_name]
+            except Exception as e:
+                raise TestDataCleanupError(
+                    f"Data cleanup failed: {e}",
+                    {"test": test_name, "data": data_info}
+                )
+```
+
+### 8.10 Recovery Management
+```python
+class RecoveryManager:
+    """Manages recovery procedures with proper verification."""
+    
+    def __init__(self):
+        self.recovery_states = {}
+        self.locks = threading.RLock()
+        self.timeout_ms = 5000
+        
+    async def execute_recovery(
+        self,
+        component: str,
+        error: Exception
+    ) -> None:
+        """Execute recovery procedure with timeout."""
+        with self.locks:
+            try:
+                procedure = self._get_recovery_procedure(
+                    component,
+                    error
+                )
+                await asyncio.wait_for(
+                    procedure(),
+                    timeout=self.timeout_ms/1000
+                )
+                await self._verify_recovery(component)
+            except asyncio.TimeoutError:
+                raise RecoveryTimeoutError(
+                    f"Recovery timed out for {component}",
+                    {
+                        "component": component,
+                        "error": error,
+                        "timeout": self.timeout_ms
+                    }
+                )
+            except Exception as e:
+                raise RecoveryError(
+                    f"Recovery failed: {e}",
+                    {
+                        "component": component,
+                        "error": error
+                    }
+                )
+                
+    async def _verify_recovery(self, component: str) -> None:
+        """Verify recovery completion."""
+        try:
+            state = await self._get_component_state(component)
+            if state != ComponentState.RECOVERED:
+                raise RecoveryVerificationError(
+                    f"Invalid recovery state: {state}",
+                    {
+                        "component": component,
+                        "expected_state": ComponentState.RECOVERED,
+                        "actual_state": state
+                    }
+                )
+        except Exception as e:
+            raise RecoveryVerificationError(
+                f"Recovery verification failed: {e}",
+                {"component": component}
+            )
+```
+
+### 8.11 Resource Pool Management
+```python
+class ResourcePoolManager:
+    """Manages resource pools with fragmentation handling."""
+    
+    def __init__(self):
+        self.pools = defaultdict(list)
+        self.locks = threading.RLock()
+        self.fragmentation_threshold = 0.2  # 20% fragmentation
+        
+    def allocate_from_pool(
+        self,
+        pool_name: str,
+        size: int
+    ) -> Resource:
+        """Allocate from pool with fragmentation check."""
+        with self.locks:
+            pool = self.pools[pool_name]
+            if self._check_fragmentation(pool):
+                self._defragment_pool(pool)
+            return self._allocate(pool, size)
+            
+    def _check_fragmentation(self, pool: List) -> bool:
+        """Check pool fragmentation level."""
+        if not pool:
+            return False
+        total_size = sum(r.size for r in pool)
+        used_size = sum(r.size for r in pool if r.in_use)
+        fragmentation = 1 - (used_size / total_size)
+        return fragmentation > self.fragmentation_threshold
+        
+    def _defragment_pool(self, pool: List) -> None:
+        """Defragment resource pool."""
+        try:
+            # Sort by address to combine adjacent free blocks
+            pool.sort(key=lambda r: r.address)
+            i = 0
+            while i < len(pool) - 1:
+                if (
+                    not pool[i].in_use and
+                    not pool[i + 1].in_use and
+                    pool[i].address + pool[i].size == pool[i + 1].address
+                ):
+                    # Combine adjacent free blocks
+                    pool[i].size += pool[i + 1].size
+                    pool.pop(i + 1)
+                else:
+                    i += 1
+        except Exception as e:
+            raise PoolDefragmentationError(
+                f"Pool defragmentation failed: {e}",
+                {"pool_size": len(pool)}
+            )
+```
+
+### 8.12 Thread Safety Management
+```python
+class ThreadSafetyManager:
+    """Manages thread safety with deadlock detection."""
+    
+    def __init__(self):
+        self.thread_locks = defaultdict(set)
+        self.lock_owners = {}
+        self.lock_order = {
+            "state": 0,
+            "metrics": 1,
+            "perf": 2,
+            "component": 3,
+            "update": 4
+        }
+        self.locks = threading.RLock()
+        
+    def acquire_lock(
+        self,
+        thread_id: int,
+        lock_name: str,
+        timeout: float = 1.0
+    ) -> bool:
+        """Acquire lock with deadlock detection."""
+        with self.locks:
+            if self._would_deadlock(thread_id, lock_name):
+                raise PotentialDeadlockError(
+                    f"Potential deadlock detected",
+                    {
+                        "thread": thread_id,
+                        "lock": lock_name,
+                        "held_locks": self.thread_locks[thread_id]
+                    }
+                )
+            
+            if not self._verify_lock_order(thread_id, lock_name):
+                raise LockOrderViolationError(
+                    f"Lock order violation",
+                    {
+                        "thread": thread_id,
+                        "lock": lock_name,
+                        "held_locks": self.thread_locks[thread_id]
+                    }
+                )
+                
+            try:
+                acquired = self.lock_owners.get(
+                    lock_name
+                )._acquire(timeout)
+                if acquired:
+                    self.thread_locks[thread_id].add(lock_name)
+                    self.lock_owners[lock_name] = thread_id
+                return acquired
+            except Exception as e:
+                raise LockAcquisitionError(
+                    f"Lock acquisition failed: {e}",
+                    {
+                        "thread": thread_id,
+                        "lock": lock_name
+                    }
+                )
+                
+    def _would_deadlock(
+        self,
+        thread_id: int,
+        lock_name: str
+    ) -> bool:
+        """Check for potential deadlock."""
+        if lock_name in self.lock_owners:
+            owner = self.lock_owners[lock_name]
+            if owner != thread_id:
+                # Check if owner is waiting for any locks held by this thread
+                owner_locks = self.thread_locks[owner]
+                return any(
+                    self.lock_owners.get(l) == thread_id
+                    for l in owner_locks
+                )
+        return False
+        
+    def _verify_lock_order(
+        self,
+        thread_id: int,
+        lock_name: str
+    ) -> bool:
+        """Verify lock acquisition follows defined order."""
+        held_locks = self.thread_locks[thread_id]
+        lock_level = self.lock_order[lock_name]
+        return all(
+            self.lock_order[l] < lock_level
+            for l in held_locks
+        )
+```
+
 ## 9. Testing Strategy
 
 ### 9.1 Component Testing
 
 IMPORTANT: NO MOCKING POLICY
-All tests must use real components and real system interactions. The only exception is the WhisperTranscriber's OpenAI API calls during development. This ensures our tests reflect actual system behavior and catch real-world issues.
-
-#### Component Test Base Class
-```python
-class ComponentTest:
-    def setUp(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
-        # Using real coordinators - no mocks
-        self.monitoring_coordinator = MonitoringCoordinator()
-        self.component_coordinator = ComponentCoordinator(self.monitoring_coordinator)
-        self.cleanup_coordinator = CleanupCoordinator(self.monitoring_coordinator)
-        self.test_coordinator = TestingCoordinator(
-            self.monitoring_coordinator,
-            self.component_coordinator,
-            self.cleanup_coordinator
-        )
-        
-        # Initialize test environment
-        self.test_env = self.test_coordinator.create_test_environment()
-        self.test_name = self.__class__.__name__
-        
-        # Start monitoring and register test thread
-        self.monitoring_coordinator.start_monitoring()
-        self.thread_id = self.monitoring_coordinator.register_test_thread(self.test_name)
-        
-        # Setup test resources
-        self.test_env.setup_test_resources()
-        self.resource_pool = self.test_coordinator.create_test_resource_pool(self.test_name)
-        self.buffer_manager = self.test_coordinator.create_test_buffer_manager(self.test_name)
-        self.queue_manager = self.test_coordinator.create_test_queue_manager(self.test_name)
-        
-        # Initialize metrics collection
-        self.metrics_collector = self.test_coordinator.create_metrics_collector(self.test_name)
-        self.metrics_collector.start_collection(self.test_name)
-        
-        # Setup error handling
-        self.shutdown_event = Event()
-        self.error_lock = Lock()
-        
-    def tearDown(self):
-        try:
-            # Stop test execution
-            self.shutdown_event.set()
-            
-            # Cleanup test component if exists
-            if hasattr(self, 'component'):
-                self.component.cleanup()
-                
-            # Stop metrics collection
-            self.metrics_collector.stop_collection(self.test_name)
-            
-            # Cleanup test resources in reverse order
-            self.queue_manager.cleanup_test_queues()
-            self.buffer_manager.cleanup_test_buffers()
-            self.resource_pool.cleanup_test_pools()
-            self.test_env.cleanup_test_resources()
-            
-            # Verify cleanup completion
-            assert self.test_coordinator.verify_test_cleanup(self.test_name)
-            
-            # Unregister test thread
-            self.monitoring_coordinator.unregister_test_thread(self.test_name, self.thread_id)
-            
-            # Stop monitoring
-            self.monitoring_coordinator.stop_monitoring()
-            
-            # Clear coordinator references
-            self.test_coordinator = None
-            self.cleanup_coordinator = None
-            self.component_coordinator = None
-            self.monitoring_coordinator = None
-            
-        except Exception as e:
-            self.logger.error(f"Test cleanup failed: {e}")
-            raise
-```
-
-#### Test Utilities
-```python
-class TestUtilities:
-    def create_test_audio(self, duration_ms=1000, sample_rate=44100):
-        """Generate real audio data for testing."""
-        samples = np.sin(2 * np.pi * 440 * np.linspace(
-            0, duration_ms/1000, int(sample_rate * duration_ms/1000)))
-        return (samples * 32767).astype(np.int16).tobytes()
-        
-    def verify_metrics(self, metrics):
-        """Validate real component metrics."""
-        self.assertIsInstance(metrics, dict)
-        self.assertIn('timestamp', metrics)
-        self.assertIn('component_health', metrics)
-        self.assertIn('resource_usage', metrics)
-        self.assertIn('performance_stats', metrics)
-```
-
-#### Test Execution Example
-```python
-class AudioCaptureTest(ComponentTest):
-    def setUp(self):
-        super().setUp()
-        self.test_utils = TestUtilities()
-        # Using real WASAPI monitor - no mocks
-        self.wasapi = WASAPIMonitor()
-        self.component = AudioCapture(
-            coordinator=self.coordinator,
-            wasapi_monitor=self.wasapi
-        )
-        self.test_data = self.test_utils.create_test_audio()
-
-    def test_audio_capture_flow(self):
-        """Test complete audio capture workflow with real components."""
-        try:
-            # Configure and start real device capture
-            self.component.configure_device(device_id=0)
-            self.component.start_capture()
-            
-            # Process real audio data
-            time.sleep(0.1)  # Allow for real audio capture
-            
-            # Verify real metrics and state
-            metrics = self.component.get_metrics()
-            self.test_utils.verify_metrics(metrics)
-            self.assertEqual(
-                self.component.get_state(),
-                ComponentState.RUNNING
-            )
-            
-            # Verify real buffer health
-            buffer_stats = self.component.get_buffer_stats()
-            self.assertGreater(buffer_stats['buffer_health'], 90)
-            self.assertEqual(buffer_stats['overruns'], 0)
-            
-        except Exception as e:
-            self.logger.error(f"Audio capture test failed: {e}")
-            raise
-        finally:
-            self.component.stop_capture()
-
-    def tearDown(self):
-        if hasattr(self, 'component'):
-            self.component.stop_capture()
-        super().tearDown()
-```
+All tests must use real components and real system interactions. The only exception is WhisperTranscriber's OpenAI API calls during development. This ensures our tests reflect actual system behavior and catch real-world issues.
 
 Key Testing Requirements:
-- All tests must use real components - NO MOCKING (except Whisper API calls during development)
-- Integration tests with actual system interactions
-- Performance benchmarks with real operations
-- Error handling verification with real error conditions
-- Lock hierarchy compliance testing with real locks
-- Resource cleanup verification with real resources
-- State transition validation with real state changes
+1. Real Component Integration
+   - All tests must use actual system components
+   - Hardware interactions must be real
+   - No mocking of dependencies
+   - Real resource allocation/deallocation
+   - Actual state transitions
+   - Real lock acquisition/release
+   - Hardware device operations
+   - File system interactions
+
+2. Performance Validation
+   - Real-time metrics collection
+   - Resource usage monitoring
+   - Lock contention tracking
+   - Thread health verification
+   - Memory allocation patterns
+   - I/O operation timing
+   - CPU utilization analysis
+   - Network operation metrics
+
+3. Error Handling Verification
+   - Real error propagation
+   - Exception context preservation
+   - Recovery procedure validation
+   - Resource cleanup verification
+   - State rollback confirmation
+   - Lock release validation
+   - Thread cleanup checks
+   - Device error recovery
+
+4. Resource Management
+   - Real memory allocation
+   - File handle tracking
+   - Thread pool management
+   - Lock hierarchy enforcement
+   - Buffer pool optimization
+   - Queue size monitoring
+   - Channel resource isolation
+   - Device resource cleanup
+
+5. State Transition Validation
+   - Real state machine operations
+   - Component state verification
+   - Recovery state tracking
+   - Error state management
+   - Resource state validation
+   - Lock state confirmation
+   - Thread state monitoring
+   - Channel state verification
 
 ### 9.2 System Testing
 
-IMPORTANT: NO MOCKING POLICY
-System tests must use real system components and actual hardware interactions. The only permitted mock is the WhisperTranscriber's OpenAI API calls during development phase. This ensures our system tests catch real-world issues and validate actual system behavior.
+1. Environment Setup
+   - Real hardware configuration
+   - Actual system resources
+   - Production-like conditions
+   - Network connectivity
+   - File system access
+   - Device availability
+   - Resource constraints
+   - Performance baselines
 
-#### Error Handling Infrastructure
-- Comprehensive error context capture
-  * Stack trace preservation
-  * Component state at failure
-  * Resource allocation status
-  * Thread registration status
-  * Lock state information
+2. Test Execution
+   - Real component instantiation
+   - Actual data processing
+   - Hardware interaction
+   - Resource allocation
+   - State transitions
+   - Error handling
+   - Performance monitoring
+   - Cleanup verification
 
-#### Thread Management
-- Thread registration and tracking
-  * Thread health monitoring
-  * Resource allocation tracking
-  * Lock acquisition history
-  * State transition logging
-  * Performance metrics collection
+3. Validation Requirements
+   - Component interaction verification
+   - Resource usage confirmation
+   - Performance metric analysis
+   - Error handling validation
+   - State consistency checks
+   - Lock hierarchy enforcement
+   - Thread safety verification
+   - Channel synchronization
 
-#### Resource Management
-- Cleanup procedures
-  * Ordered resource release
-  * Lock hierarchy preservation
-  * State rollback mechanisms
-  * Error state handling
-  * Recovery validation
+4. Test Data Management
+   - Real data generation
+   - File system operations
+   - Buffer management
+   - Channel separation
+   - Data integrity checks
+   - Cleanup procedures
+   - Storage optimization
+   - Resource tracking
 
-#### System Level Tests
-- End-to-end workflow validation
-- Concurrent operation stress testing
-- Error recovery scenarios
-- Performance profiling
-- Resource leak detection
-- State consistency verification
-- Channel synchronization testing
+5. Error Injection
+   - Hardware failures
+   - Resource exhaustion
+   - State corruption
+   - Lock timeouts
+   - Thread crashes
+   - Channel errors
+   - API failures
+   - Network issues
 
-## 10. Benefits and Risks
+6. Performance Analysis
+   - Resource utilization
+   - Response times
+   - Thread behavior
+   - Lock contention
+   - Memory patterns
+   - I/O operations
+   - CPU usage
+   - Network metrics
 
-### 10.1 Benefits
-1. Architectural Improvements:
-   - Clear separation of concerns
-   - Reduced coupling between components
-   - Improved testability
-   - Better error handling
-   - Cleaner state management
-   - Explicit channel-aware operations
-   - Centralized thread management
-   - Unified error context preservation
+7. Recovery Testing
+   - Error recovery
+   - State restoration
+   - Resource cleanup
+   - Thread restart
+   - Channel reset
+   - Device reconnection
+   - Data integrity
+   - System stability
 
-2. Operational Benefits:
-   - Easier debugging
-   - Simplified testing
-   - Better error recovery
-   - Clearer component boundaries
-   - Improved maintainability
+8. Long-Running Tests
+   - Resource stability
+   - Memory patterns
+   - Thread health
+   - State consistency
+   - Error handling
+   - Performance trends
+   - System reliability
+   - Component interaction
 
-3. Development Benefits:
-   - Easier to implement new features
-   - Reduced risk of regressions
-   - Better code organization
-   - Clearer dependency paths
-   - Improved documentation
+### 9.3 Test Infrastructure
 
-### 10.2 Risks and Mitigation
-1. Migration Risks:
-   - Breaking changes to component interactions
-   - Potential performance impact
-   - Testing with real components (no mocks)
-   - Resource cleanup challenges
-   - Lock ordering violations
-   - State transition atomicity
-   - Error propagation complexity
-   - Channel synchronization issues
-   - Hardware dependency management
-   - Real-time processing requirements
+1. Hardware Requirements
+   - Test lab setup
+   - Device configuration
+   - Network environment
+   - Storage systems
+   - Processing capacity
+   - Memory resources
+   - I/O capabilities
+   - Monitoring tools
 
-2. Mitigation Strategies:
-   - Phased interface implementation
-   - Comprehensive testing with real components
-   - Performance monitoring on actual hardware
-   - Detailed documentation of real system interactions
-   - Careful cleanup validation with real resources
-   - Lock hierarchy preservation in real scenarios
-   - Atomic operation guarantees with real state
-   - Channel-aware testing with real audio
-   - Error handling verification with real errors
-   - Hardware test lab for all scenarios
+2. Software Components
+   - Test frameworks
+   - Monitoring systems
+   - Analysis tools
+   - Logging facilities
+   - Metric collectors
+   - Report generators
+   - Debug utilities
+   - Verification tools
 
-## 11. Next Steps
+3. Resource Management
+   - Memory pools
+   - Thread pools
+   - File handles
+   - Network connections
+   - Device access
+   - Buffer allocation
+   - Queue management
+   - Lock coordination
 
-1. Implementation Order:
-   - Create coordinator interfaces
-   - Update core components
-   - Implement real component tests (no mocks)
-   - Update existing tests to use real components
-   - Verify real component interactions
-   - Set up hardware test environment
+4. Monitoring Systems
+   - Performance metrics
+   - Resource usage
+   - Thread states
+   - Lock patterns
+   - Error tracking
+   - State transitions
+   - System health
+   - Component status
 
-2. Validation Requirements:
-   - Full test coverage with real components
-   - Performance benchmarks on actual hardware
-   - Error handling verification with real errors
-   - State transition validation in real scenarios
-   - Resource cleanup confirmation with real resources
-   - Hardware compatibility verification
-   - Real-time processing validation
-   - Exception handling with real system errors
+5. Analysis Tools
+   - Performance analysis
+   - Resource tracking
+   - Error pattern detection
+   - State verification
+   - Lock analysis
+   - Thread monitoring
+   - System stability
+   - Component interaction
 
-3. Testing Policy Updates:
-   - Remove all mocking frameworks
-   - Implement real component testing
-   - Set up dedicated hardware test lab
-   - Document real system test procedures
-   - Exception: WhisperTranscriber API calls during development
+6. Reporting Systems
+   - Test results
+   - Performance metrics
+   - Error patterns
+   - Resource usage
+   - State transitions
+   - System health
+   - Component status
+   - Long-term trends
+
+### 9.4 Test Execution
+
+1. Setup Phase
+   - Environment preparation
+   - Resource allocation
+   - Component initialization
+   - State verification
+   - Lock setup
+   - Thread creation
+   - Channel configuration
+   - Monitoring start
+
+2. Execution Phase
+   - Component operation
+   - Resource usage
+   - State transitions
+   - Error handling
+   - Performance monitoring
+   - Thread management
+   - Channel coordination
+   - Data processing
+
+3. Validation Phase
+   - Result verification
+   - Resource checks
+   - State confirmation
+   - Error validation
+   - Performance analysis
+   - Thread health
+   - Channel status
+   - System stability
+
+4. Cleanup Phase
+   - Resource release
+   - State cleanup
+   - Lock release
+   - Thread shutdown
+   - Channel cleanup
+   - File cleanup
+   - Memory release
+   - System reset
+
+### 9.5 Test Categories
+
+1. Unit Tests
+   - Component isolation
+   - Interface verification
+   - State management
+   - Resource handling
+   - Error processing
+   - Performance checks
+   - Thread safety
+   - Channel operation
+
+2. Integration Tests
+   - Component interaction
+   - Resource sharing
+   - State coordination
+   - Error propagation
+   - Performance impact
+   - Thread coordination
+   - Channel synchronization
+   - System stability
+
+3. System Tests
+   - End-to-end operation
+   - Resource management
+   - State consistency
+   - Error handling
+   - Performance validation
+   - Thread management
+   - Channel coordination
+   - Component interaction
+
+4. Performance Tests
+   - Resource utilization
+   - Response times
+   - Thread behavior
+   - Lock patterns
+   - Memory usage
+   - I/O operations
+   - CPU utilization
+   - Network metrics
+
+5. Stability Tests
+   - Long-term operation
+   - Resource patterns
+   - State consistency
+   - Error handling
+   - Performance trends
+   - Thread health
+   - Channel stability
+   - System reliability
+
+6. Recovery Tests
+   - Error recovery
+   - State restoration
+   - Resource cleanup
+   - Thread restart
+   - Channel reset
+   - System stability
+   - Data integrity
+   - Component recovery
+
+### 9.6 Test Documentation
+
+1. Test Plans
+   - Objectives
+   - Requirements
+   - Resources
+   - Procedures
+   - Validation
+   - Timeline
+   - Dependencies
+   - Metrics
+
+2. Test Cases
+   - Setup steps
+   - Execution
+   - Validation
+   - Cleanup
+   - Resources
+   - Dependencies
+   - Expected results
+   - Error handling
+
+3. Test Results
+   - Execution status
+   - Performance metrics
+   - Resource usage
+   - Error patterns
+   - State transitions
+   - System health
+   - Component status
+   - Analysis findings
+
+4. Test Analysis
+   - Performance trends
+   - Resource patterns
+   - Error analysis
+   - State verification
+   - System stability
+   - Component interaction
+   - Thread behavior
+   - Channel coordination
+
+5. Test Reports
+   - Summary
+   - Details
+   - Metrics
+   - Analysis
+   - Findings
+   - Recommendations
+   - Follow-up
+   - Documentation
