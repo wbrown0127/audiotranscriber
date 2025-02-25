@@ -85,7 +85,8 @@ from pathlib import Path
 from typing import Dict, List
 
 from .monitoring_coordinator import MonitoringCoordinator
-from .wasapi_monitor import WASAPIMonitor
+# Note: Using renamed implementation device_monitor.py (2025-02-24 standardization)
+from .device_monitor import WASAPIMonitor
 from .cleanup_coordinator import CleanupCoordinator
 from .recovery_logger import RecoveryLogger
 from .state_machine import StateMachine

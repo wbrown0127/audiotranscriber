@@ -65,10 +65,12 @@ from audio_transcriber.buffer_manager import BufferManager
 from audio_transcriber.monitoring_coordinator import MonitoringCoordinator
 from audio_transcriber.storage_manager import StorageManager
 from audio_transcriber.signal_processor import SignalProcessor
-from audio_transcriber.alert_system import AlertSystem, AlertConfig
+# Note: Using renamed interface i_alert_system (2025-02-24 standardization)
+from audio_transcriber.interfaces.i_alert_system import AlertSystem, AlertConfig
 from audio_transcriber.gui.main_window import MainWindow
 from audio_transcriber.whisper_transcriber import WhisperTranscriber
-from audio_transcriber.wasapi_monitor import WASAPIMonitor
+# Note: Using renamed implementation device_monitor.py (2025-02-24 standardization)
+from audio_transcriber.device_monitor import WASAPIMonitor
 
 logger = logging.getLogger(__name__)
 
